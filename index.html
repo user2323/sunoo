@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>내 휴대폰</title>
+  <style>
+    body { margin:0; min-height:100vh; background:#111; display:flex; align-items:center; justify-content:center; }
+    /* 화면 비율 9:16 */
+    .phone { --pw:min(100vw, 56.25vh, 420px); --sbh:calc(var(--pw) * 0.1357);
+      width:var(--pw); aspect-ratio:9/16; position:relative; overflow:hidden;
+      font-family:-apple-system,'Helvetica Neue','Noto Sans KR',sans-serif; color:#fff;
+      background-color:#444; background-size:cover; background-position:center; }
+
+    /* 갤러리 색상 (기본: 다크 모드) */
+    .phone { --g-bg:#000; --g-fg:#fff; --g-sub:#8e8e93; --g-tile:#1c1c1e; --g-glyph:#48484a; --g-line:#38383a;
+      --g-blue:#0a84ff; --g-back:#fff; --g-bar:rgba(28,28,30,.94); --g-pill:rgba(94,94,96,.9);
+      --g-scrim:linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.35) 65%, rgba(0,0,0,0)); }
+    .phone.glight { --g-bg:#fff; --g-fg:#000; --g-tile:#ececf0; --g-glyph:#c7c7cc; --g-line:#d1d1d6;
+      --g-blue:#0a7aff; --g-back:#0a7aff; --g-bar:rgba(249,249,249,.94); --g-pill:rgba(120,120,128,.16);
+      --g-scrim:linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,.6) 65%, rgba(255,255,255,0)); }
+
+    /* ---------- 상단 상태바 ---------- */
+    .sbar { position:absolute; top:0; left:0; right:0; height:var(--sbh); padding:0 22px; z-index:100;
+      display:flex; align-items:center; justify-content:space-between; pointer-events:none;
+      --fg:#fff; --bg:#000; color:var(--fg); font-size:15px; font-weight:600; }
+    .phone.dark .sbar { --fg:#000; --bg:#fff; }
+    .phone.locked .sl .hl { display:none; }
+    .sl, .sr { display:flex; align-items:center; gap:7px; }
+    .carrier { font-size:14px; font-weight:700; }
+    svg.f { fill:currentColor; }
+    .batt { position:relative; width:27px; height:13px; border-radius:4px; background:var(--fg);
+      color:var(--bg); font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    .batt::after { content:''; position:absolute; right:-3px; top:4px; width:2px; height:5px;
+      border-radius:0 2px 2px 0; background:var(--fg); opacity:.5; }
+    /* 다이내믹 아일랜드 (카메라 검은 부분) */
+    .island { position:absolute; left:50%; top:calc(var(--pw) * 0.027); transform:translateX(-50%);
+      width:calc(var(--pw) * 0.252); height:calc(var(--pw) * 0.074); background:#000; border-radius:999px; }
+    .lens { position:absolute; right:16%; top:50%; transform:translateY(-50%);
+      width:calc(var(--pw) * 0.022); height:calc(var(--pw) * 0.022); border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #2b2f45, #0a0a0f 70%); }
+
+    /* ---------- 홈 화면 ---------- */
+    .home { position:absolute; inset:0; padding-top:calc(var(--sbh) + 8px); }
+    .spw { --spbg:#b07b7b; --splight:#efdede; margin:0 14px; height:100px; border-radius:34px; background:var(--spbg);
+      display:flex; align-items:center; gap:10px; padding:0 12px 0 14px; box-sizing:border-box; color:#fff; }
+    .art { --art:54px; width:var(--art); height:var(--art); flex:none; border-radius:10px;
+      background:url('album.jpg') 0 calc(var(--art) * -0.6574) / var(--art) auto no-repeat, linear-gradient(135deg,#6a5cff,#ff6ec4); }
+    .sinfo { flex:1; min-width:0; }
+    .sp-title { font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sp-artist { font-size:13px; color:#f3d9d9; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ctrl { display:flex; align-items:center; gap:8px; flex:none; }
+    .pause { width:36px; height:36px; border-radius:50%; background:var(--splight); display:flex; align-items:center; justify-content:center; }
+    .wlabel { text-align:center; font-size:11px; margin:5px 0 8px; text-shadow:0 1px 3px rgba(0,0,0,.6); }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); row-gap:12px; padding:0 10px; }
+    .cell { display:flex; flex-direction:column; align-items:center; }
+    .lbl { margin-top:4px; font-size:11px; text-shadow:0 1px 3px rgba(0,0,0,.6); white-space:nowrap; }
+    .app { width:56px; height:56px; border-radius:14px; overflow:hidden; cursor:pointer; position:relative; }
+    .app img { width:100%; height:100%; object-fit:cover; display:block; }
+    .app.cal { background:linear-gradient(#fff,#f1f1f1); color:#111; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; cursor:default; box-shadow:inset 0 0 0 1px rgba(0,0,0,.08); }
+    .app.cal .w { font-size:10px; font-weight:400; color:#ff3b30; }
+    .app.cal .d { font-size:30px; font-weight:300; line-height:1; margin-top:1px; }
+      .app.noclick { cursor:default; }
+    .ico { position:relative; width:56px; height:56px; }
+    .dot { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
+      background:#ff3b30; box-shadow:0 1px 3px rgba(0,0,0,.25); z-index:2; }
+    .search { position:absolute; left:50%; bottom:104px; transform:translateX(-50%); height:28px; padding:0 16px;
+      border-radius:14px; background:rgba(0,0,0,.28); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      display:flex; align-items:center; gap:6px; font-size:12px; }
+    .dock { position:absolute; left:10px; right:10px; bottom:16px; padding:12px 6px; border-radius:30px;
+      display:flex; justify-content:space-around;
+      background:rgba(255,255,255,.28); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+    .homebar { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:160px; height:22px;
+      z-index:101; cursor:pointer; display:flex; align-items:flex-end; justify-content:center; padding-bottom:6px; }
+    .homebar i { width:120px; height:4px; border-radius:2px; background:#fff; display:block; }
+    .phone.dark .homebar i { background:#000; }
+
+    /* ---------- 잠금 화면 ---------- */
+    .lock { position:absolute; inset:0; z-index:20; background-color:#000; background-size:cover; background-position:center;
+      touch-action:none; user-select:none; }
+    .center { position:absolute; top:22%; left:0; width:100%; transform:translateY(-50%); text-align:center;
+      text-shadow:0 2px 12px rgba(0,0,0,.35); }
+    .hint { position:absolute; bottom:100%; left:0; width:100%; margin-bottom:24px;
+      display:flex; align-items:center; justify-content:center; gap:7px; font-size:15px; }
+    .time { font-size:84px; font-weight:300; line-height:1; letter-spacing:-2px; }
+    .date { font-size:17px; font-weight:300; margin-top:10px; }
+    .cam, .flash { position:absolute; bottom:56px; width:48px; height:48px; border-radius:50%;
+      overflow:hidden; background:#333; display:flex; align-items:center; justify-content:center; }
+    .cam { right:26px; }
+    .flash { left:26px; }
+    .cam img { width:26px; height:26px; border-radius:6px; object-fit:cover; }
+
+    /* 잠금화면 알림 */
+    .notifs { position:absolute; left:16px; right:16px; top:35%; }
+    .nhead { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .nhead h2 { margin:0; font-size:15px; font-weight:500; text-shadow:0 1px 8px rgba(0,0,0,.35); }
+    .nclose { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.3);
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .ngroup { position:relative; margin-bottom:24px; }
+    .stk { position:absolute; border-radius:0 0 12px 12px; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+    .s1 { left:10px; right:10px; height:7px; bottom:-7px; background:rgba(255,255,255,.3); }
+    .s2 { left:20px; right:20px; height:6px; bottom:-13px; background:rgba(255,255,255,.2); }
+    .ncard { position:relative; padding:12px 14px 14px; border-radius:18px; background:rgba(235,240,247,.55);
+      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#111; text-shadow:none; text-align:left; }
+    .nrow { display:flex; align-items:center; gap:8px; font-size:13px; color:#555; }
+    .nrow .t { margin-left:auto; }
+    .nic { width:28px; height:28px; border-radius:8px; background:#fee500; overflow:hidden; flex:none; }
+    .nic img { width:100%; height:100%; object-fit:cover; display:block; }
+    .nbody { margin-top:7px; font-size:16px; }
+
+    /* ---------- 갤러리 (아이폰 사진 앱) ---------- */
+    .gal, .alb { position:absolute; inset:0; background:var(--g-bg); color:var(--g-fg); display:none; }
+    .gal { z-index:10; padding-top:var(--sbh); overflow-y:auto; flex-direction:column; }
+    .alb { z-index:15; }
+    .gal.open { display:flex; }
+    .alb.open { display:block; }
+
+    /* 앨범 목록 */
+    .g-nav { height:36px; flex:none; display:flex; align-items:center; padding:0 22px; color:var(--g-blue); }
+    .gal h1 { margin:0; padding:2px 22px 8px; font-size:34px; font-weight:800; }
+    .g-line { height:1px; background:var(--g-line); margin-left:22px; flex:none; }
+    .g-sec { display:flex; justify-content:space-between; align-items:baseline; padding:12px 22px 10px;
+      font-size:22px; font-weight:700; }
+    .g-sec .see { font-size:17px; font-weight:400; color:var(--g-blue); }
+    .albums-wrap { overflow-x:auto; scrollbar-width:none; padding-bottom:90px; }
+    .albums-wrap::-webkit-scrollbar { display:none; }
+    .albums { display:grid; grid-auto-flow:column; grid-template-rows:auto auto;
+      grid-auto-columns:calc(var(--pw) * 0.43); gap:18px calc(var(--pw) * 0.03);
+      width:max-content; padding:0 calc(var(--pw) * 0.053); }
+    .atile.go { cursor:pointer; }
+    .cov { position:relative; aspect-ratio:1; border-radius:8px; background:var(--g-tile); overflow:hidden;
+      display:flex; align-items:center; justify-content:center; }
+    .cov img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .heart { position:absolute; left:9px; bottom:8px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+    .an { font-size:15px; margin-top:6px; }
+    .ac { font-size:15px; color:var(--g-sub); margin-top:1px; }
+
+    /* 앨범 안 */
+    .photos { position:absolute; inset:0; overflow-y:auto; padding-bottom:72px; background:var(--g-bg);
+      display:grid; grid-template-columns:repeat(3,1fr); gap:2px; align-content:start; }
+    .photos .ph { aspect-ratio:1; background:var(--g-tile); }
+    .photos img { width:100%; aspect-ratio:1; object-fit:cover; display:block; }
+    .alb-head { position:absolute; top:0; left:0; right:0; z-index:2; padding-top:var(--sbh);
+      background:var(--g-scrim); color:var(--g-fg); }
+    .alb-nav { display:flex; align-items:center; justify-content:space-between; padding:4px 14px 0; height:36px; }
+    .bk { display:flex; align-items:center; gap:5px; color:var(--g-back); font-size:17px; cursor:pointer; }
+    .nr { display:flex; align-items:center; gap:8px; }
+    .pillb { height:28px; padding:0 14px; border-radius:14px; background:var(--g-pill); font-size:13px;
+      font-weight:600; display:flex; align-items:center; color:var(--g-fg); }
+    .circ { width:28px; height:28px; border-radius:50%; background:var(--g-pill);
+      display:flex; align-items:center; justify-content:center; color:var(--g-fg); }
+    .alb-title { padding:4px 14px 16px 34px; font-size:22px; font-weight:700; }
+
+    /* 갤러리 하단 탭 */
+    .gtabs { position:absolute; left:0; right:0; bottom:0; height:72px; z-index:16; display:none;
+      padding:8px 6px 0; box-sizing:border-box; background:var(--g-bar); border-top:1px solid var(--g-line);
+      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); color:#8e8e93; }
+    .gtabs.open { display:flex; }
+    .gt { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:500; }
+    .gt.on { color:var(--g-blue); }
+
+    /* ---------- 카톡 채팅 목록 ---------- */
+    .kk { position:absolute; inset:0; z-index:10; background:#fff; color:#000; padding-top:var(--sbh);
+      display:none; flex-direction:column; }
+    .kk.open { display:flex; }
+    .kk-top { display:flex; align-items:center; justify-content:space-between; padding:6px 18px 8px; }
+    .kk-top h1 { margin:0; font-size:24px; font-weight:800; }
+    .kk-top .ic { display:flex; gap:18px; }
+    .filters { display:flex; gap:8px; padding:4px 16px 8px; }
+    .pill { display:flex; align-items:center; gap:6px; height:34px; padding:0 16px; border-radius:17px;
+      background:#f0f0f0; color:#444; font-size:14px; font-weight:700; cursor:pointer; }
+    .pill.on { background:#1b1b1b; color:#fff; }
+    .pill .cnt { background:#f4511e; color:#fff; font-size:11px; padding:1px 7px; border-radius:9px; }
+    .kk-list { flex:1; overflow-y:auto; }
+    .item { display:flex; align-items:center; padding:6px 16px; }
+    .item.go { cursor:pointer; }
+    .item .av { flex:none; margin-right:12px; }
+    .item .mid { flex:1; min-width:0; }
+    .item .nm { font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .item .ms { font-size:13px; color:#8a8a8a; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .item .rt { flex:none; margin-left:10px; text-align:right; font-size:11px; color:#999; }
+    .badge { display:inline-block; min-width:18px; height:18px; line-height:18px; padding:0 5px; box-sizing:border-box;
+      border-radius:9px; background:#f4511e; color:#fff; font-size:11px; font-weight:700; text-align:center; margin-top:6px; }
+    .kk-tabs { height:62px; padding-bottom:14px; display:flex; align-items:center; justify-content:space-around;
+      background:#fff; border-top:1px solid #f0f0f0; }
+    .tab { position:relative; }
+    .tab .badge { position:absolute; top:-10px; left:14px; margin:0; background:#ff5a1f; }
+
+    /* ---------- 카톡 채팅방 ---------- */
+    .room { position:absolute; inset:0; z-index:15; background:#abc1d1; color:#000; padding-top:var(--sbh);
+      display:none; flex-direction:column; }
+    .room.open { display:flex; }
+    .room-top { display:flex; align-items:center; justify-content:space-between; padding:6px 16px 8px; }
+    .room-top .l { display:flex; align-items:center; gap:16px; font-size:17px; font-weight:600; }
+    .room-top .r { display:flex; gap:18px; }
+    .msgs { flex:1; overflow-y:auto; padding:6px 10px 10px; }
+    .row { display:flex; align-items:flex-start; margin-top:3px; }
+    .row.gap { margin-top:10px; }
+    .row.sent { justify-content:flex-end; }
+    .avs { width:38px; margin-right:8px; flex:none; }
+    .col .nm { font-size:12px; margin:0 0 4px 2px; color:#333; }
+    .bw { display:flex; align-items:flex-end; gap:5px; }
+    .b { position:relative; width:fit-content; max-width:210px; padding:8px 12px; border-radius:12px;
+      font-size:14px; line-height:1.4; word-break:keep-all; overflow-wrap:break-word; }
+    .recv .b { background:#fff; }
+    .sent .b { background:#fee500; }
+    .b.first::before { content:''; position:absolute; top:0; width:12px; height:12px; background:inherit; }
+    .recv .b.first::before { left:-5px; clip-path:polygon(0 0,100% 0,100% 100%); }
+    .sent .b.first::before { right:-5px; clip-path:polygon(0 0,100% 0,0 100%); }
+    .tm { font-size:10px; color:#4a5560; white-space:nowrap; }
+    .divider { text-align:center; margin:18px 0 8px; }
+    .divider span { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:16px;
+      background:rgba(100,120,140,.55); color:#fff; font-size:12px; }
+    .inputbar { background:#fff; display:flex; align-items:center; gap:10px; padding:9px 12px 24px; }
+    .plus, .hash { width:32px; height:32px; border-radius:50%; background:#f0f0f0; flex:none;
+      display:flex; align-items:center; justify-content:center; }
+    .field { flex:1; height:36px; border-radius:18px; background:#f0f0f0; display:flex;
+      align-items:center; justify-content:space-between; padding:0 6px 0 14px; color:#b0b0b0; font-size:14px; }
+    .emo { width:24px; height:24px; border-radius:50%; background:#d4d4d4; }
+  </style>
+</head>
+<body>
+  <div class="phone locked" id="phone">
+
+    <!-- 상단 상태바 -->
+    <div class="sbar">
+      <div class="sl">
+        <span class="carrier">U+</span>
+        <span class="hl clock-text"></span>
+        <svg class="hl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M3 3l18 18"/></svg>
+      </div>
+      <div class="island"><i class="lens"></i></div>
+      <div class="sr">
+        <svg class="f" width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.2a10 10 0 0 1 14 0"/><path d="M4 6.8a6.4 6.4 0 0 1 9 0"/><circle cx="8.5" cy="10" r="1" fill="currentColor"/></svg>
+        <div class="batt"><span id="bn"></span></div>
+      </div>
+    </div>
+
+    <!-- 홈 화면 -->
+    <div class="home">
+      <!-- 스포티파이 위젯 -->
+      <div class="spw">
+        <div class="art"></div>
+        <div class="sinfo">
+          <div class="sp-title" id="spTitle"></div>
+          <div class="sp-artist" id="spArtist"></div>
+        </div>
+        <div class="ctrl">
+          <svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="2" width="3" height="14" rx="1" fill="#efdede"/><path d="M16 2.5v13L6 9z" fill="#efdede" stroke="#efdede" stroke-width="1" stroke-linejoin="round"/></svg>
+          <div class="pause"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="2" width="3.4" height="12" rx="1" fill="#b07b7b"/><rect x="9.6" y="2" width="3.4" height="12" rx="1" fill="#b07b7b"/></svg></div>
+          <svg width="18" height="18" viewBox="0 0 18 18"><rect x="14" y="2" width="3" height="14" rx="1" fill="#efdede"/><path d="M2 2.5v13L12 9z" fill="#efdede" stroke="#efdede" stroke-width="1" stroke-linejoin="round"/></svg>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#efdede"/><g fill="none" stroke="#b07b7b" stroke-width="1.9" stroke-linecap="round"><path d="M5.5 9C9.8 7.6 14.6 8 18.3 10.2"/><path d="M6.2 12.8C9.6 11.8 13.4 12.1 16.6 13.8"/><path d="M7 16.2C9.8 15.4 12.6 15.7 15 16.9"/></g></svg>
+      </div>
+      <div class="wlabel">Spotify</div>
+
+      <!-- 앱 아이콘 (위에서 아래로, 왼쪽에서 오른쪽으로 배치돼요) -->
+      <div class="grid" id="grid"></div>
+
+      <div class="search">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+        검색
+      </div>
+    </div>
+
+    <div class="dock">
+      <div class="app noclick"><img src="camera.jpg" alt="카메라"></div>
+      <div class="app" onclick="openGallery()"><img src="photos.jpg" alt="갤러리"></div>
+      <div class="ico"><div class="app noclick"><img src="phone.jpg" alt="전화"></div><i class="dot"></i></div>
+      <div class="app noclick"><img src="messages.jpg" alt="메시지"></div>
+    </div>
+
+    <!-- 갤러리: 앨범 목록 -->
+    <div class="gal" id="gal">
+      <div class="g-nav">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
+      </div>
+      <h1>Albums</h1>
+      <div class="g-line"></div>
+      <div class="g-sec"><span>My Albums</span><span class="see">See All</span></div>
+      <div class="albums-wrap"><div class="albums" id="albums"></div></div>
+    </div>
+
+    <!-- 갤러리: 앨범 안 -->
+    <div class="alb" id="alb">
+      <div class="photos" id="photos"></div>
+      <div class="alb-head">
+        <div class="alb-nav">
+          <div class="bk" onclick="closeAlbum()">
+            <svg width="12" height="20" viewBox="0 0 12 20"><path d="M10 2L2 10l8 8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Albums
+          </div>
+          <div class="nr">
+            <div class="pillb">Select</div>
+            <div class="circ"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/></svg></div>
+          </div>
+        </div>
+        <div class="alb-title" id="albTitle"></div>
+      </div>
+    </div>
+
+    <!-- 갤러리 하단 탭 -->
+    <div class="gtabs" id="gtabs">
+      <div class="gt">
+        <svg width="28" height="28" viewBox="0 0 28 28"><rect x="7" y="3" width="18" height="14" rx="3" fill="currentColor" opacity=".55"/><rect x="3" y="8" width="19" height="15" rx="3" fill="currentColor"/><circle cx="9" cy="13" r="1.8" fill="#fff" opacity=".6"/><path d="M4 21l6-5 4 3 3-2 5 4" fill="#fff" opacity=".6"/></svg>
+        <span>Library</span>
+      </div>
+      <div class="gt">
+        <svg width="28" height="28" viewBox="0 0 28 28"><rect x="5" y="3" width="18" height="22" rx="4" fill="currentColor"/><path d="M14 14.5c-2.600-1.800-3.500-3-3.500-4.200 0-1 .8-1.800 1.800-1.800.8 0 1.400.4 1.700 1 .3-.6.900-1 1.700-1 1 0 1.800.8 1.800 1.800 0 1.200-.9 2.400-3.500 4.200z" fill="#fff" opacity=".85"/><rect x="9" y="18" width="10" height="1.800" rx=".9" fill="#fff" opacity=".7"/><rect x="9" y="21" width="7" height="1.800" rx=".9" fill="#fff" opacity=".7"/></svg>
+        <span>For You</span>
+      </div>
+      <div class="gt on">
+        <svg width="28" height="28" viewBox="0 0 28 28"><rect x="7" y="2" width="14" height="2" rx="1" fill="currentColor" opacity=".7"/><rect x="5" y="5.500" width="18" height="2" rx="1" fill="currentColor" opacity=".85"/><rect x="3" y="9" width="22" height="16" rx="3.500" fill="currentColor"/></svg>
+        <span>Albums</span>
+      </div>
+      <div class="gt">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="7.500" stroke-width="2.600"/><path d="M18 18l6 6" stroke-width="2.800"/></svg>
+        <span>Search</span>
+      </div>
+    </div>
+
+    <!-- 카톡 채팅 목록 -->
+    <div class="kk" id="kk">
+      <div class="kk-top">
+        <h1>채팅</h1>
+        <div class="ic">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+          <svg width="26" height="24" viewBox="0 0 26 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C6.5 3 3 6 3 10c0 2.2 1.1 4.1 2.8 5.3L5 20l4.5-2.3c.8.2 1.6.3 2.5.3 5.5 0 9-3 9-7s-3.5-8-9-8z"/><path d="M20 3v6M17 6h6"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M10 2h4l.7 2.7 2.2 1.2 2.7-.9 2 3.4-2 1.9v2.4l2 1.9-2 3.4-2.7-.9-2.2 1.2L14 22h-4l-.7-2.7-2.2-1.2-2.7.9-2-3.4 2-1.9v-2.4l-2-1.9 2-3.4 2.7.9 2.2-1.2z"/></svg>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="pill on" id="pAll" onclick="setFilter('all')">전체</div>
+        <div class="pill" id="pUnread" onclick="setFilter('unread')">안읽음 <span class="cnt" id="cntUnread"></span></div>
+      </div>
+      <div class="kk-list" id="klist"></div>
+      <div class="kk-tabs">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="#b5b5b5"><circle cx="14" cy="9" r="5.5"/><path d="M3 25c0-6 5-9 11-9s11 3 11 9z"/></svg>
+        <div class="tab">
+          <svg width="30" height="28" viewBox="0 0 30 28" fill="#2b2b2b"><path d="M15 3C8 3 2.5 7.5 2.5 13c0 3.3 2 6.2 5 8L6 26l5.5-3.2c1.1.3 2.3.4 3.5.4 7 0 12.5-4.5 12.5-10S22 3 15 3z"/></svg>
+          <span class="badge" id="tabBadge"></span>
+        </div>
+        <svg width="30" height="28" viewBox="0 0 30 28" fill="#b5b5b5"><path d="M13 3C7 3 2.5 7 2.5 12c0 3 1.7 5.6 4.3 7.2L6 24l4.8-2.7c.7.1 1.4.2 2.2.2 6 0 10.5-4 10.5-9S19 3 13 3z"/><circle cx="21" cy="17" r="7" fill="#9a9a9a"/><path d="M19 13.5v7l5.5-3.5z" fill="#fff"/></svg>
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="#b5b5b5"><path d="M6 9h16l2 16H4z"/><path d="M10 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#b5b5b5" stroke-width="2"/></svg>
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="#b5b5b5"><circle cx="5" cy="14" r="2.5"/><circle cx="14" cy="14" r="2.5"/><circle cx="23" cy="14" r="2.5"/></svg>
+      </div>
+    </div>
+
+    <!-- 카톡 채팅방 -->
+    <div class="room" id="room">
+      <div class="room-top">
+        <div class="l">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" onclick="closeRoom()" style="cursor:pointer"><path d="M20 12H5M11 5l-7 7 7 7"/></svg>
+          <span id="roomName"></span>
+        </div>
+        <div class="r">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </div>
+      </div>
+      <div class="msgs" id="msgs"></div>
+      <div class="inputbar">
+        <div class="plus"><svg width="16" height="16" viewBox="0 0 16 16" stroke="#222" stroke-width="2" stroke-linecap="round"><path d="M8 1v14M1 8h14"/></svg></div>
+        <div class="field"><span>메시지 입력</span><div class="emo"></div></div>
+        <div class="hash"><svg width="18" height="18" viewBox="0 0 18 18" stroke="#222" stroke-width="2" stroke-linecap="round"><path d="M6 2L4.5 16M13 2l-1.5 14M2 6.5h14M1.5 11.5h14"/></svg></div>
+      </div>
+    </div>
+
+    <!-- 잠금 화면 -->
+    <div class="lock" id="lock">
+      <div class="center">
+        <div class="hint">
+          <svg width="16" height="18" viewBox="0 0 18 20"><rect x="2" y="9" width="14" height="10" rx="2.5" fill="#fff"/><path d="M5 9V6.5a4 4 0 0 1 8 0V9" fill="none" stroke="#fff" stroke-width="2"/></svg>
+          위로 쓸어올려서 잠금 해제
+        </div>
+        <div class="time clock-text"></div>
+        <div class="date" id="date"></div>
+      </div>
+
+      <div class="notifs" id="notifs">
+        <div class="nhead">
+          <h2>알림 센터</h2>
+          <div class="nclose" onclick="closeNotifs()">
+            <svg width="16" height="16" viewBox="0 0 16 16" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </div>
+        </div>
+        <div id="nlist"></div>
+      </div>
+
+      <div class="flash">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M8 2h8v4.5l-1.8 2.5H9.8L8 6.5z" fill="#fff"/><rect x="9.6" y="10" width="4.8" height="12" rx="1.6" fill="#fff"/><circle cx="12" cy="14" r="1.2" fill="#333"/></svg>
+      </div>
+      <div class="cam"><img src="camera.jpg" alt="카메라"></div>
+    </div>
+
+    <!-- 홈 바 (누르면 홈 화면으로) -->
+    <div class="homebar" onclick="goHome()"><i></i></div>
+  </div>
+
+  <script>
+    // ===== 여기서 고쳐요 =====
+    const TIME = '10:24';
+    const DATE = '12월 22일 화요일';
+    const BATTERY = 85;
+
+    // 배경 사진 파일 이름
+    const LOCK_BG = 'lock.jpg';   // 잠금화면
+    const HOME_BG = 'home.jpg';   // 바탕화면
+
+    // 스포티파이 위젯 (앨범 사진은 album.jpg)
+    const SONG_TITLE = 'Break For You';
+    const SONG_ARTIST = 'Valley';
+
+    // 잠금화면 카톡 알림
+    const NOTIFS = [
+      { app:'카카오톡',  icon:'kakao.jpg',     bg:'#fee500', text:'9개의 알림',        time:'지금' },
+      { app:'전화',      icon:'phone.jpg',     bg:'#1fc95a', text:'부재중 전화 3통',   time:'5분 전' },
+      { app:'Instagram', icon:'instagram.jpg', zoom:1.12,    text:'새로운 메시지 2개', time:'12분 전' },
+    ];
+
+    // 홈 화면 앱 (순서대로 배치돼요) — zoom은 아이콘 가장자리 흰 여백을 잘라내는 값
+    const APPS = [
+      { label:'카카오톡',  img:'kakao.jpg', bg:'#fee500', click:'openKakao()', badge:true },
+      { label:'FaceTime',  img:'facetime.jpg' },
+      { label:'캘린더',    calendar:true },
+      { label:'Instagram', img:'instagram.jpg', zoom:1.12, badge:true},
+      { label:'메모',      img:'notes.jpg' },
+      { label:'YouTube',   img:'youtube.jpg' },
+      { label:'SNOW',      img:'snow.jpg' },
+      { label:'앱',        img:'moon.jpg' },
+      { label:'Safari',    img:'safari.jpg', zoom:1.14 },
+      { label:'App Store', img:'appstore.jpg' },
+      { label:'지갑',      img:'wallet.jpg' },
+      { label:'건강',      img:'health.jpg', zoom:1.14 },
+      { label:'설정',      img:'settings.jpg' },
+    ];
+
+    // 갤러리 화면 색상: true = 다크 모드(검정), false = 라이트 모드(흰색)
+    const GALLERY_DARK = true;
+
+    // 갤러리 앨범 — 첫 줄은 Recents, 둘째 줄은 Favorites 순으로 세로로 채워져요
+    // open:true 인 앨범만 들어갈 수 있어요
+    const ALBUMS = [
+      { id:'recents',     name:'Recents',     count:'1,248', open:true },
+      { id:'favorites',   name:'Favorites',   count:'24',    open:true, heart:true },
+      { id:'screenshots', name:'Screenshots', count:'312' },
+      { id:'download',    name:'Download',    count:'57' },
+    ];
+    // 앨범 대표 이미지: cover-recents.jpg, cover-favorites.jpg, cover-screenshots.jpg, cover-download.jpg
+    // 앨범 안 사진은 아직 없어서 빈 칸으로 채워둬요 (나중에 파일 이름을 여기 넣어요)
+        // Recents는 photos/recents/1.jpg ~ 63.jpg 를 전부 불러와요
+    const RECENTS_COUNT = 63;
+    // Favorites에 넣을 사진 번호만 적어요 (recents 폴더의 번호예요)
+    const FAVORITES = [4, 7, 10, 14, 16, 18, 19, 21, 24, 25, 27, 30, 34, 36, 38, 41, 43, 50, 52, 59];
+    const PHOTOS = {
+      recents:   Array.from({ length: RECENTS_COUNT }, (_, i) => `photos/recents/${i + 1}.jpg`),
+      favorites: FAVORITES.map(n => `photos/recents/${n}.jpg`),
+    };
+    const PLACEHOLDER_COUNT = 24;
+    // 프로필 색: b=파랑, g=초록, p=보라
+    const COLORS = { b:'#8fc5f2', g:'#7fd6c2', p:'#c3c0f7' };
+
+    // 채팅 목록 (위에서부터 순서대로). chat 이 있는 방만 들어갈 수 있어요.
+    // 채팅: ['r'=받은 말 / 's'=보낸 말, 내용, 시간(묶음의 마지막에만)] / ['d', 날짜]
+    const rooms = [
+      { name:'박종성', msg:'괜찮은거 맞니?', time:'오전 11:30', unread:4, c:'g',
+        chat:[
+          ['d','2026년 12월 19일 토요일'],
+          ['r','좋은시간보내렴','오후 9:31'],
+          ['s','감사~ 형도요ㅋㅋ','오후 9:31'],
+          ['r','......','오후 9:31'],
+          ['d','2026년 12월 22일 화요일'],
+          ['r','선우야'],
+          ['r','사고났다는게 뭔소리야','오전 11:18'],
+          ['r','심재윤은 왜 전화를 안 받아'],
+          ['r','괜찮은거 맞니?','오전 11:30'],
+        ] },
+      { name:'정우',            msg:'이모티콘을 보냈습니다.',  time:'오전 9:27',  unread:1, c:'p' },
+      { name:'누나',            msg:'사진을 보냈습니다.',      time:'어제',       unread:0, c:'p' },
+      { name:'재윤이 형', msg:'내려와~', time:'어제', unread:3, c:'b',
+        chat:[
+          ['r','먹고싶은거 있어?'],
+          ['r','서누~','오후 7:49'],
+          ['s','나 진짜 상관없다구'],
+          ['s','형 먹고싶은거 먹자 이번엔','오후 7:49'],
+          ['r','ㅋㅋㅋㅋㅋㅋ'],
+          ['r','그럼'],
+          ['r','내가 알아서 예약한다?','오후 7:49'],
+          ['s','오키~','오후 7:49'],
+          ['d','2026년 12월 21일 월요일'],
+          ['r','선우'],
+          ['r','왜 전화 안 받아'],
+          ['r','내려와~','오후 7:49'],
+        ] },
+      { name:'진혁',            msg:'ㅇㅋ',                    time:'어제',       unread:0, c:'g' },
+      { name:'준기형',          msg:'이모티콘을 보냈습니다.',  time:'어제',       unread:0, c:'b' },
+      { name:'지수',            msg:'확인~',                   time:'12월 20일',  unread:0, c:'g' },
+      { name:'반지공방아뜰리에', msg:'예약 확정되었습니다 :)',  time:'12월 19일',  unread:0, c:'b' },
+      { name:'진서',            msg:'ㅋㅋㅋㅋㅋ',              time:'12월 19일',  unread:0, c:'p' },
+    ];
+    // =========================
+
+    const phone = document.getElementById('phone');
+    const lock = document.getElementById('lock');
+
+    // 배경 사진
+    phone.style.backgroundImage = `url('${HOME_BG}')`;
+    lock.style.backgroundImage = `url('${LOCK_BG}')`;
+
+    // 갤러리 라이트/다크
+    if (!GALLERY_DARK) phone.classList.add('glight');
+
+    // 시간, 날짜, 배터리
+    document.querySelectorAll('.clock-text').forEach(el => el.textContent = TIME);
+    document.getElementById('date').textContent = DATE;
+    document.getElementById('bn').textContent = BATTERY;
+
+    // 스포티파이 위젯
+    document.getElementById('spTitle').textContent = SONG_TITLE;
+    document.getElementById('spArtist').textContent = SONG_ARTIST;
+
+    // 홈 화면 앱 그리기 (캘린더는 DATE에서 날짜와 요일을 자동으로 가져와요)
+    const dm = DATE.match(/(\d+)일\s*(\S+)$/);
+    document.getElementById('grid').innerHTML = APPS.map(a => {
+      let inner, cls = 'app', style = '';
+      if (a.calendar) {
+        cls += ' cal';
+        inner = `<div class="w">${dm ? dm[2] : ''}</div><div class="d">${dm ? dm[1] : ''}</div>`;
+      } else {
+        if (a.bg) style = `background:${a.bg};`;
+        inner = `<img src="${a.img}" alt="${a.label}" ${a.zoom ? `style="transform:scale(${a.zoom})"` : ''} onerror="this.style.display='none'">`;
+      }
+      if (!a.click) cls += ' noclick';
+      return `<div class="cell"><div class="ico"><div class="${cls}" style="${style}" ${a.click ? `onclick="${a.click}"` : ''}>${inner}</div>${a.badge ? '<i class="dot"></i>' : ''}</div><div class="lbl">${a.label}</div></div>`;
+    }).join('');
+
+    // 잠금화면 알림
+    document.getElementById('nlist').innerHTML = NOTIFS.map(n => `
+      <div class="ngroup">
+        <div class="stk s1"></div><div class="stk s2"></div>
+        <div class="ncard">
+          <div class="nrow">
+            <div class="nic" style="background:${n.bg || '#ddd'}"><img src="${n.icon}" alt="" ${n.zoom ? `style="transform:scale(${n.zoom})"` : ''} onerror="this.style.display='none'"></div>
+            <span>${n.app}</span><span class="t">${n.time}</span>
+          </div>
+          <div class="nbody">${n.text}</div>
+        </div>
+      </div>`).join('');
+    function closeNotifs() { document.getElementById('notifs').style.display = 'none'; }
+
+    // ---------- 갤러리 ----------
+    const stackGlyph = `<svg width="44" height="38" viewBox="0 0 44 38" fill="none" stroke="var(--g-glyph)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M14 8V7a5 5 0 0 1 5-5h18a5 5 0 0 1 5 5v14a5 5 0 0 1-5 5h-1"/><rect x="3" y="9" width="30" height="26" rx="5"/><circle cx="12" cy="18" r="2.5"/><path d="M5 31l9-8 6 5 5-4 6 5"/></svg>`;
+    const heartIcon = `<svg class="heart" width="18" height="18" viewBox="0 0 24 24"><path d="M12 21C5.5 16 2.5 12.500 2.500 8.800 2.500 6 4.600 4 7.200 4c1.800 0 3.500 1 4.800 2.800C13.300 5 15 4 16.800 4c2.600 0 4.700 2 4.700 4.800 0 3.700-3 7.200-9.500 12.200z" fill="#fff"/></svg>`;
+    document.getElementById('albums').innerHTML = ALBUMS.map(a => `
+      <div class="atile${a.open ? ' go' : ''}" ${a.open ? `onclick="openAlbum('${a.id}')"` : ''}>
+        <div class="cov">${stackGlyph}<img src="cover-${a.id}.jpg" alt="" onerror="this.style.display='none'">${a.heart ? heartIcon : ''}</div>
+        <div class="an">${a.name}</div>
+        <div class="ac">${a.count}</div>
+      </div>`).join('');
+
+    function openGallery() {
+      document.getElementById('gal').classList.add('open');
+      document.getElementById('gtabs').classList.add('open');
+      if (!GALLERY_DARK) phone.classList.add('dark');
+    }
+    function openAlbum(id) {
+      const a = ALBUMS.find(x => x.id === id);
+      document.getElementById('albTitle').textContent = a.name;
+      const list = PHOTOS[id] || [];
+      const ph = document.getElementById('photos');
+      ph.innerHTML = list.length
+        ? list.map(src => `<img src="${src}" alt="">`).join('')
+        : Array.from({ length: PLACEHOLDER_COUNT }, () => '<div class="ph"></div>').join('');
+      ph.scrollTop = 0;
+      document.getElementById('alb').classList.add('open');
+    }
+    function closeAlbum() { document.getElementById('alb').classList.remove('open'); }
+
+    // ---------- 카카오톡 ----------
+    function avatar(size, key) {
+      const col = COLORS[key];
+      return `<svg width="${size}" height="${size}" viewBox="0 0 40 40"><rect width="40" height="40" rx="15" fill="${col}"/><circle cx="20" cy="16" r="6.5" fill="#fff" opacity=".9"/><path d="M9 34c0-6.5 5-9.5 11-9.5S31 27.5 31 34z" fill="#fff" opacity=".9"/></svg>`;
+    }
+
+    let curFilter = 'all', curRoom = null;
+
+    function refreshList() {
+      const total = rooms.reduce((s, r) => s + r.unread, 0);
+      const cnt = document.getElementById('cntUnread');
+      const tb = document.getElementById('tabBadge');
+      cnt.textContent = total; cnt.style.display = total ? '' : 'none';
+      tb.textContent = total; tb.style.display = total ? '' : 'none';
+      const list = rooms.map((r, i) => ({ r, i })).filter(x => curFilter === 'all' || x.r.unread > 0);
+      document.getElementById('klist').innerHTML = list.map(({ r, i }) => `
+        <div class="item${r.chat ? ' go' : ''}" ${r.chat ? `onclick="openRoom(${i})"` : ''}>
+          <div class="av">${avatar(46, r.c)}</div>
+          <div class="mid"><div class="nm">${r.name}</div><div class="ms">${r.msg}</div></div>
+          <div class="rt"><div>${r.time}</div>${r.unread ? `<span class="badge">${r.unread}</span>` : ''}</div>
+        </div>`).join('');
+    }
+    function setFilter(f) {
+      curFilter = f;
+      document.getElementById('pAll').classList.toggle('on', f === 'all');
+      document.getElementById('pUnread').classList.toggle('on', f === 'unread');
+      refreshList();
+    }
+    refreshList();
+
+    function openRoom(i) {
+      const r = rooms[i];
+      curRoom = i;
+      document.getElementById('roomName').textContent = r.name;
+      document.getElementById('msgs').innerHTML = r.chat.map((m, k) => {
+        if (m[0] === 'd') {
+          return `<div class="divider"><span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="1.3"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5"/><path d="M1.5 5.5h11M4.5 1v3M9.5 1v3"/></svg>${m[1]} ›</span></div>`;
+        }
+        // 보낸 사람이 바뀌거나, 앞 말풍선에 시간이 찍혀 있으면(=묶음이 끝났으면) 새 묶음이에요
+        const prev = r.chat[k - 1];
+        const first = !prev || prev[0] !== m[0] || !!prev[2];
+        const time = m[2] ? `<span class="tm">${m[2]}</span>` : '';
+        const bub = `<div class="b${first ? ' first' : ''}">${m[1]}</div>`;
+        if (m[0] === 'r') {
+          return `<div class="row recv${first ? ' gap' : ''}"><div class="avs">${first ? avatar(38, r.c) : ''}</div><div class="col">${first ? `<div class="nm">${r.name}</div>` : ''}<div class="bw">${bub}${time}</div></div></div>`;
+        }
+        return `<div class="row sent${first ? ' gap' : ''}"><div class="bw">${time}${bub}</div></div>`;
+      }).join('');
+      document.getElementById('room').classList.add('open');
+      const m = document.getElementById('msgs'); m.scrollTop = m.scrollHeight;
+    }
+    // 채팅방에서 나오면 읽음 처리돼요
+    function closeRoom() {
+      if (curRoom !== null) { rooms[curRoom].unread = 0; curRoom = null; refreshList(); }
+      document.getElementById('room').classList.remove('open');
+    }
+    function openKakao() { document.getElementById('kk').classList.add('open'); phone.classList.add('dark'); }
+
+    // 홈으로
+    function goHome() {
+      closeRoom();
+      closeAlbum();
+      document.getElementById('kk').classList.remove('open');
+      document.getElementById('gal').classList.remove('open');
+      document.getElementById('gtabs').classList.remove('open');
+      phone.classList.remove('dark');
+    }
+
+    // 위로 밀어서 잠금해제
+    let startY = null, dy = 0;
+    lock.addEventListener('pointerdown', e => {
+      if (e.target.closest('.nclose')) return;
+      startY = e.clientY;
+      lock.style.transition = 'none';
+      lock.setPointerCapture(e.pointerId);
+    });
+    lock.addEventListener('pointermove', e => {
+      if (startY === null) return;
+      dy = Math.min(0, e.clientY - startY);
+      lock.style.transform = `translateY(${dy}px)`;
+    });
+    lock.addEventListener('pointerup', () => {
+      if (startY === null) return;
+      lock.style.transition = 'transform .4s ease';
+      if (dy < -100) {
+        lock.style.transform = 'translateY(-100%)';
+        lock.style.pointerEvents = 'none';
+        phone.classList.remove('locked');
+      } else {
+        lock.style.transform = 'translateY(0)';
+      }
+      startY = null; dy = 0;
+    });
+  </script>
+</body>
+</html>
