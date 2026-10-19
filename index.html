@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <title>내 휴대폰</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600&display=swap" rel="stylesheet">
   <style>
     body { margin:0; min-height:100vh; background:#111; display:flex; align-items:center; justify-content:center; }
     /* 화면 비율 9:16 */
@@ -52,7 +55,7 @@
     .ctrl { display:flex; align-items:center; gap:8px; flex:none; }
     .pause { width:36px; height:36px; border-radius:50%; background:var(--splight); display:flex; align-items:center; justify-content:center; }
     .wlabel { text-align:center; font-size:11px; margin:5px 0 8px; text-shadow:0 1px 3px rgba(0,0,0,.6); }
-    .grid { display:grid; grid-template-columns:repeat(4,1fr); row-gap:12px; padding:0 10px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); row-gap:26px; padding:0 10px; }
     .cell { display:flex; flex-direction:column; align-items:center; }
     .lbl { margin-top:4px; font-size:11px; text-shadow:0 1px 3px rgba(0,0,0,.6); white-space:nowrap; }
     .app { width:56px; height:56px; border-radius:14px; overflow:hidden; cursor:pointer; position:relative; }
@@ -83,8 +86,12 @@
       text-shadow:0 2px 12px rgba(0,0,0,.35); }
     .hint { position:absolute; bottom:100%; left:0; width:100%; margin-bottom:24px;
       display:flex; align-items:center; justify-content:center; gap:7px; font-size:15px; }
-    .time { font-size:84px; font-weight:300; line-height:1; letter-spacing:-2px; }
-    .date { font-size:17px; font-weight:300; margin-top:10px; }
+    .time { font-family:'Inter',-apple-system,'Noto Sans KR',sans-serif; font-size:84px; font-weight:300; line-height:1;
+      letter-spacing:-1px; font-variant-numeric:lining-nums tabular-nums; font-synthesis:none;
+      -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;
+      -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+    .date { font-family:'Inter',-apple-system,'Noto Sans KR',sans-serif; font-size:17px; font-weight:300; margin-top:10px;
+      -webkit-text-size-adjust:100%; text-size-adjust:100%; }
     .cam, .flash { position:absolute; bottom:56px; width:48px; height:48px; border-radius:50%;
       overflow:hidden; background:#333; display:flex; align-items:center; justify-content:center; }
     .cam { right:26px; }
@@ -250,7 +257,7 @@
         </div>
         <div class="ctrl">
           <svg width="18" height="18" viewBox="0 0 18 18"><rect x="1" y="2" width="3" height="14" rx="1" fill="#efdede"/><path d="M16 2.5v13L6 9z" fill="#efdede" stroke="#efdede" stroke-width="1" stroke-linejoin="round"/></svg>
-          <div class="pause"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="2" width="3.4" height="12" rx="1" fill="#b07b7b"/><rect x="9.6" y="2" width="3.4" height="12" rx="1" fill="#b07b7b"/></svg></div>
+          <div class="pause" id="playBtn" onclick="toggleSong()"></div>
           <svg width="18" height="18" viewBox="0 0 18 18"><rect x="14" y="2" width="3" height="14" rx="1" fill="#efdede"/><path d="M2 2.5v13L12 9z" fill="#efdede" stroke="#efdede" stroke-width="1" stroke-linejoin="round"/></svg>
         </div>
         <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#efdede"/><g fill="none" stroke="#b07b7b" stroke-width="1.9" stroke-linecap="round"><path d="M5.5 9C9.8 7.6 14.6 8 18.3 10.2"/><path d="M6.2 12.8C9.6 11.8 13.4 12.1 16.6 13.8"/><path d="M7 16.2C9.8 15.4 12.6 15.7 15 16.9"/></g></svg>
@@ -520,6 +527,21 @@
     // 스포티파이 위젯
     document.getElementById('spTitle').textContent = SONG_TITLE;
     document.getElementById('spArtist').textContent = SONG_ARTIST;
+    // 스포티파이 위젯 재생/정지 (index.html과 같은 폴더에 song.mp3 를 넣어요)
+    const SONG_FILE = 'song.mp3';
+    const song = new Audio(SONG_FILE);
+    const playBtn = document.getElementById('playBtn');
+    const ICON_PLAY  = `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M4.5 2.5v11L13.5 8z" fill="#b07b7b"/></svg>`;
+    const ICON_PAUSE = `<svg width="16" height="16" viewBox="0 0 16 16"><rect x="3" y="2" width="3.4" height="12" rx="1" fill="#b07b7b"/><rect x="9.6" y="2" width="3.4" height="12" rx="1" fill="#b07b7b"/></svg>`;
+    playBtn.style.cursor = 'pointer';
+    playBtn.innerHTML = ICON_PLAY;
+    song.addEventListener('play',  () => playBtn.innerHTML = ICON_PAUSE);
+    song.addEventListener('pause', () => playBtn.innerHTML = ICON_PLAY);
+    song.addEventListener('ended', () => playBtn.innerHTML = ICON_PLAY);
+    function toggleSong() {
+      if (song.paused) song.play().catch(() => { playBtn.innerHTML = ICON_PLAY; });
+      else song.pause();
+    }
 
     // 홈 화면 앱 그리기 (캘린더는 DATE에서 날짜와 요일을 자동으로 가져와요)
     const dm = DATE.match(/(\d+)일\s*(\S+)$/);
