@@ -14,7 +14,11 @@
       width:var(--pw); aspect-ratio:9/16; position:relative; overflow:hidden;
       font-family:-apple-system,'Helvetica Neue','Noto Sans KR',sans-serif; color:#fff;
       background-color:#444; background-size:cover; background-position:center; }
-
+    /* 폰으로 볼 때는 화면 전체를 꽉 채워요 */
+    @media (max-width: 600px) {
+      body { display:block; min-height:0; overflow:hidden; }
+      .phone { --pw:100vw; width:100vw; height:100vh; height:100dvh; aspect-ratio:auto; }
+    }
     /* 갤러리 색상 (기본: 다크 모드) */
     .phone { --g-bg:#000; --g-fg:#fff; --g-sub:#8e8e93; --g-tile:#1c1c1e; --g-glyph:#48484a; --g-line:#38383a;
       --g-blue:#0a84ff; --g-back:#fff; --g-bar:rgba(28,28,30,.94); --g-pill:rgba(94,94,96,.9);
@@ -55,7 +59,7 @@
     .ctrl { display:flex; align-items:center; gap:8px; flex:none; }
     .pause { width:36px; height:36px; border-radius:50%; background:var(--splight); display:flex; align-items:center; justify-content:center; }
     .wlabel { text-align:center; font-size:11px; margin:5px 0 8px; text-shadow:0 1px 3px rgba(0,0,0,.6); }
-    .grid { display:grid; grid-template-columns:repeat(4,1fr); row-gap:26px; padding:0 10px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); row-gap:clamp(14px, 3.4vh, 26px); padding:0 10px; }
     .cell { display:flex; flex-direction:column; align-items:center; }
     .lbl { margin-top:4px; font-size:11px; text-shadow:0 1px 3px rgba(0,0,0,.6); white-space:nowrap; }
     .app { width:56px; height:56px; border-radius:14px; overflow:hidden; cursor:pointer; position:relative; }
@@ -87,7 +91,7 @@
     .hint { position:absolute; bottom:100%; left:0; width:100%; margin-bottom:24px;
       display:flex; align-items:center; justify-content:center; gap:7px; font-size:15px; }
     .time { font-family:'Inter',-apple-system,'Noto Sans KR',sans-serif; font-size:84px; font-weight:300; line-height:1;
-      letter-spacing:-1px; font-variant-numeric:lining-nums tabular-nums; font-synthesis:none;
+      letter-spacing:-1px; font-variant-numeric:lining-nums proportional-nums; font-synthesis:none;
       -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;
       -webkit-text-size-adjust:100%; text-size-adjust:100%; }
     .date { font-family:'Inter',-apple-system,'Noto Sans KR',sans-serif; font-size:17px; font-weight:300; margin-top:10px;
