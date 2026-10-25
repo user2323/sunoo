@@ -70,8 +70,8 @@
     .app.cal .d { font-size:30px; font-weight:300; line-height:1; margin-top:1px; }
       .app.noclick { cursor:default; }
     .ico { position:relative; width:56px; height:56px; }
-    .dot { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
-      background:#ff3b30; box-shadow:0 1px 3px rgba(0,0,0,.25); z-index:2; }
+        .dot { position:absolute; top:-5px; right:-5px; width:14px; height:14px; border-radius:50%;
+      background:#ff3b30; box-shadow:0 1px 2px rgba(0,0,0,.25); z-index:2; }
     .search { position:absolute; left:50%; bottom:104px; transform:translateX(-50%); height:28px; padding:0 16px;
       border-radius:14px; background:rgba(0,0,0,.28); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
       display:flex; align-items:center; gap:6px; font-size:12px; }
@@ -262,52 +262,56 @@
     .ig-top .l svg { flex:none; }
     .ig-top .dot { position:static; width:7px; height:7px; background:#ff3040; box-shadow:none; }
     .ig-top .r { display:flex; align-items:center; gap:18px; }
-    .ig-body { flex:1; overflow-y:auto; padding-bottom:66px; }
-    .ig-head { display:flex; align-items:flex-start; gap:22px; padding:6px 16px 14px; }
-    .ig-ava { position:relative; width:86px; height:86px; flex:none; border-radius:50%; overflow:hidden;
-      background:linear-gradient(135deg,#6a5cff,#ff6ec4); }
-    .ig-ava img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ig-body { flex:1; overflow-y:auto; padding-bottom:56px; }
+    .ig-head { display:flex; align-items:flex-start; gap:22px; padding:6px 16px 2px; }
+    .ig-ava { position:relative; width:74px; height:74px; flex:none; }
+.ig-ava-img { width:100%; height:100%; border-radius:50%; overflow:hidden; background:linear-gradient(135deg,#6a5cff,#ff6ec4); }
+.ig-ava-img img { width:100%; height:100%; object-fit:cover; display:block; }
+.ig-plus { position:absolute; right:-2px; bottom:-2px; width:30px; height:30px; border-radius:50%;
+  background:#000; color:#fff; display:flex; align-items:center; justify-content:center;
+  border:3px solid #fff; font-size:17px; line-height:1; }
     .ig-plus { position:absolute; right:-2px; bottom:-2px; width:22px; height:22px; border-radius:50%;
       background:#1b1b1b; color:#fff; display:flex; align-items:center; justify-content:center;
       border:2px solid #fff; font-size:15px; line-height:1; }
-    .ig-stats { flex:1; display:flex; justify-content:space-between; text-align:center; padding-top:8px; }
-    .ig-stats b { display:block; font-size:18px; font-weight:700; }
+    .ig-stats-col { flex:1; display:flex; flex-direction:column; gap:10px; padding-top:0px; }
+.ig-stats { display:flex; gap:70px; }
+.ig-stats > div { text-align:left; }
+.ig-name { font-size:15px; font-weight:700; }
     .ig-stats span { display:block; font-size:13px; color:#262626; margin-top:2px; }
-    .ig-name { padding:0 16px; font-size:15px; font-weight:700; }
-    .ig-email { padding:4px 16px 0; display:flex; align-items:center; gap:6px; font-size:14px; color:#262626; }
-    .ig-song { margin:10px 16px 0; display:flex; align-items:center; justify-content:space-between;
-      border:1px solid #dbdbdb; border-radius:8px; padding:8px 12px; }
-    .ig-song .l2 { display:flex; align-items:center; gap:8px; font-size:13px; }
-    .ig-song b { font-weight:700; }
-    .ig-song span { color:#8e8e93; }
-    .ig-song .add { display:flex; align-items:center; gap:4px; font-size:13px; font-weight:700;
-      border:1px solid #dbdbdb; border-radius:14px; padding:5px 12px; }
+    .ig-email { padding:3px 16px 0; display:flex; align-items:center; gap:6px; font-size:14px; color:#262626; }
+.ig-song { margin:6px 16px 0; display:flex; align-items:center; gap:6px; }
+.ig-song .l2 { display:flex; align-items:center; gap:5px; font-size:10.5px; color:#8e8e93;
+  border:1px solid #e8e8e8; border-radius:999px; padding:2px 9px; }
+.ig-song b { font-weight:600; color:#444; }
+.ig-song span { color:#b0b0b0; }
+.ig-song .add { display:flex; align-items:center; gap:3px; font-size:10.5px; font-weight:500; color:#b0b0b0;
+  border:1px solid #e8e8e8; border-radius:999px; padding:2px 9px; flex:none; }
     .ig-btns { display:flex; gap:8px; padding:12px 16px 4px; }
-    .ig-btns div { flex:1; height:32px; border-radius:8px; background:#efefef; display:flex;
-      align-items:center; justify-content:center; font-size:13px; font-weight:700; }
-    .ig-hl { display:flex; gap:20px; padding:16px 16px 6px; overflow-x:auto; scrollbar-width:none; }
+    .ig-btns div { flex:1; height:29px; border-radius:7px; background:#f3f3f3; display:flex;
+  align-items:center; justify-content:center; font-size:12.5px; font-weight:600; color:#555; }
+    .ig-hl { display:flex; gap:16px; padding:10px 16px 2px; overflow-x:auto; scrollbar-width:none; }
     .ig-hl::-webkit-scrollbar { display:none; }
-    .ig-hl-item { flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; width:66px; }
-    .ig-hl-circ { width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-      background:#fafafa; border:1px solid #dbdbdb; overflow:hidden; position:relative; }
-    .ig-hl-circ.ring { border:2px solid transparent; background:
-      linear-gradient(#fff,#fff) padding-box, radial-gradient(circle at 70% 70%,#515bd4,#8134af,#dd2a7b,#feda75) border-box; }
+    .ig-hl-item { flex:none; display:flex; flex-direction:column; align-items:center; gap:4px; width:54px; }
+    .ig-hl-circ { width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:#fafafa; border:1px solid #dbdbdb; overflow:hidden; position:relative; }
+    .ig-hl-circ.ring { border:3.5px solid transparent; background:
+  linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg,#dadbdd,#dadbdd,#dadbdd,#dadbdd,#dadbdd) border-box; }
     .ig-hl-circ img { width:100%; height:100%; object-fit:cover; }
-    .ig-hl-item span { font-size:12px; }
-    .ig-tabs { display:flex; border-top:1px solid #dbdbdb; margin-top:6px; }
-    .ig-tab { flex:1; display:flex; align-items:center; justify-content:center; height:46px; color:#8e8e93; }
+    .ig-hl-item span { font-size:11px; }
+    .ig-tabs { display:flex; margin-top:2px; }
+    .ig-tab { flex:1; display:flex; align-items:center; justify-content:center; height:38px; color:#8e8e93; }
     .ig-tab.on { color:#262626; border-bottom:1.5px solid #262626; }
     .ig-posts { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
     .ig-posts .p { position:relative; aspect-ratio:1; background:#eee; }
     .ig-posts .p img { width:100%; height:100%; object-fit:cover; display:block; }
     .ig-posts .p .multi { position:absolute; top:6px; right:6px; color:#fff; filter:drop-shadow(0 0 2px rgba(0,0,0,.5)); }
-    .ig-navbar { position:absolute; left:0; right:0; bottom:0; height:60px; z-index:11; background:#fff;
+    .ig-navbar { position:absolute; left:0; right:0; bottom:0; height:50px; z-index:11; background:#fff;
       border-top:1px solid #efefef; display:flex; align-items:center; justify-content:space-around; }
     .ig-navbar svg { flex:none; }
     .ig-nav-dm { position:relative; }
     .ig-nav-dm .dot { position:absolute; top:-3px; right:-7px; width:9px; height:9px; background:#ff3040;
       border-radius:50%; box-shadow:0 0 0 2px #fff; }
-    .ig-nav-ava { width:26px; height:26px; border-radius:50%; overflow:hidden; border:1.5px solid #000; }
+    .ig-nav-ava { width:30px; height:30px; border-radius:50%; overflow:hidden; border:3px solid #000; box-sizing:border-box; }
     .ig-nav-ava img { width:100%; height:100%; object-fit:cover; display:block; }
   </style>
 </head>
@@ -491,21 +495,23 @@
       </div>
       <div class="ig-body">
         <div class="ig-head">
-          <div class="ig-ava"><img src="igprofile.jpg" alt=""><div class="ig-plus">+</div></div>
-          <div class="ig-stats">
-            <div><b id="igPosts"></b><span>게시물</span></div>
-            <div><b id="igFollowers"></b><span>팔로워</span></div>
-            <div><b id="igFollowing"></b><span>팔로잉</span></div>
-          </div>
-        </div>
-        <div class="ig-name" id="igName"></div>
-        <div class="ig-email">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
-          <span id="igEmail"></span>
-        </div>
+  <div class="ig-ava"><div class="ig-ava-img"><img src="igprofile.jpg" alt=""></div><div class="ig-plus">+</div></div>
+  <div class="ig-stats-col">
+    <div class="ig-name" id="igName"></div>
+    <div class="ig-stats">
+      <div><b id="igPosts"></b><span>게시물</span></div>
+      <div><b id="igFollowers"></b><span>팔로워</span></div>
+      <div><b id="igFollowing"></b><span>팔로잉</span></div>
+    </div>
+  </div>
+</div>
+<div class="ig-email">
+  <span>🖱️</span>
+  <span id="igEmail"></span>
+</div>
         <div class="ig-song">
           <div class="l2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <div><b id="igSongTitle"></b> <span id="igSongArtist"></span></div>
           </div>
           <div class="add">+ 추가</div>
@@ -513,19 +519,27 @@
         <div class="ig-btns"><div>프로필 편집</div><div>프로필 공유</div></div>
         <div class="ig-hl" id="igHl"></div>
         <div class="ig-tabs">
-          <div class="ig-tab on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-          <div class="ig-tab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5,3 19,12 5,21"/></svg></div>
-          <div class="ig-tab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8" cy="20" r="1.2" fill="currentColor"/></svg></div>
-        </div>
+  <div class="ig-tab on"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="17" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/><rect x="17" y="9" width="6" height="6" rx="1"/><rect x="1" y="17" width="6" height="6" rx="1"/><rect x="9" y="17" width="6" height="6" rx="1"/><rect x="17" y="17" width="6" height="6" rx="1"/></svg></div>
+  <div class="ig-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><polygon points="9.5,8 16,12 9.5,16"/></svg></div>
+  <div class="ig-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M8.5 6.5H6a3 3 0 0 0-3 3V18a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V9.5a3 3 0 0 0-3-3h-2.5l-1.7-2Q12 2.4 10.2 4.5z"/><circle cx="12" cy="11.5" r="2.6"/><path d="M7 20.5c.6-2.8 2.5-4.3 5-4.3s4.4 1.5 5 4.3"/></svg></div>
+</div>
         <div class="ig-posts" id="igPostsGrid"></div>
       </div>
       <div class="ig-navbar">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polygon points="8,5 19,12 8,19"/></svg>
-        <div class="ig-nav-dm"><svg width="26" height="24" viewBox="0 0 26 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C6.5 3 3 6 3 10c0 2.2 1.1 4.1 2.8 5.3L5 20l4.5-2.3c.8.2 1.6.3 2.5.3 5.5 0 9-3 9-7s-3.5-8-9-8z"/></svg><i class="dot"></i></div>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
-        <div class="ig-nav-ava"><img src="igprofile.jpg" alt=""></div>
-      </div>
+  <!-- 홈 -->
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"><path d="M3 20.5V10.6a1.5 1.5 0 0 1 .6-1.2l7.6-6a1.3 1.3 0 0 1 1.6 0l7.6 6a1.5 1.5 0 0 1 .6 1.2v9.9a.5.5 0 0 1-.5.5H15.5v-6a3.5 3.5 0 0 0-7 0v6H3.5a.5.5 0 0 1-.5-.5z"/></svg>
+  <!-- 릴스 -->
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5.5"/><path d="M10 8.7l5.3 3.3-5.3 3.3z"/></svg>
+  <!-- DM (종이비행기) -->
+  <div class="ig-nav-dm">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"><path d="M3.8 6.8Q3.2 5.4 4.8 5.1L20.2 4.3Q21.9 4.4 21.2 6L13.4 19.6Q12.4 21 11.4 19.5L8.6 11.5z"/><path d="M8.6 11.5L16 7.9"/></svg>
+    <i class="dot"></i>
+  </div>
+  <!-- 검색 -->
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7.3"/><path d="M16 16l5 5"/></svg>
+  <!-- 프로필 -->
+  <div class="ig-nav-ava"><img src="igprofile.jpg" alt=""></div>
+</div>
     </div>
 
     <!-- 잠금 화면 -->
@@ -627,15 +641,15 @@
     const IG_USERNAME = 'sunoooooo._';
     const IG_NAME = '선 우';
     const IG_POSTS_COUNT = 115;
-    const IG_FOLLOWERS = 0;
+    const IG_FOLLOWERS = '624.8K';
     const IG_FOLLOWING = 2;
     const IG_EMAIL = 'sunoo24@gmail.com';
     const IG_SONG_TITLE = 'Break For You';
     const IG_SONG_ARTIST = 'Valley';
     // 스토리 하이라이트: 첫 칸은 항상 New(빈 동그라미), 그 다음부터 이 목록이 이어져요
     const IG_HIGHLIGHTS = [
-      { img:'ighighlight1.jpg' },
-    ];
+  { img:'ighighlight1.jpg' },
+];
     // 피드에 올라갈 게시물 대표 사진 (왼쪽 위부터 3개씩 채워져요)
     // 9칸 중 비어있는 칸은 igpost-extra.jpg 로 채워둬요 (나중에 원하는 사진으로 바꿔요)
     const IG_POSTS = [
@@ -850,12 +864,12 @@
     document.getElementById('igHl').innerHTML =
       `<div class="ig-hl-item"><div class="ig-hl-circ"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><span>New</span></div>` +
       IG_HIGHLIGHTS.map(h => `
-        <div class="ig-hl-item">
-          <div class="ig-hl-circ ring"><img src="${h.img}" alt="" onerror="this.parentElement.style.background='#eee'; this.style.display='none'"></div>
-          <span>${h.label || ''}</span>
-        </div>`).join('');
+  <div class="ig-hl-item">
+    <div class="ig-hl-circ ring">${h.emoji ? `<span style="font-size:28px">${h.emoji}</span>` : `<img src="${h.img}" alt="" onerror="this.parentElement.style.background='#eee'; this.style.display='none'">`}</div>
+    <span>${h.label || ''}</span>
+  </div>`).join('');
 
-    const multiIcon = `<svg class="multi" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z" opacity=".55"/><rect x="2" y="6" width="16" height="14" rx="3"/></svg>`;
+    const multiIcon = `<svg class="multi" width="17" height="17" viewBox="0 0 24 24"><path d="M15.5 8.5v7.2a2.3 2.3 0 0 1-2.3 2.3" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/><rect x="3" y="3" width="13.5" height="13.5" rx="3.2" fill="#fff"/></svg>`;
     document.getElementById('igPostsGrid').innerHTML = IG_POSTS.map(src => `
       <div class="p"><img src="${src}" alt="" onerror="this.style.display='none'">${multiIcon}</div>`).join('');
 
