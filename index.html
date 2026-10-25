@@ -252,6 +252,63 @@
     .field { flex:1; height:36px; border-radius:18px; background:#f0f0f0; display:flex;
       align-items:center; justify-content:space-between; padding:0 6px 0 14px; color:#b0b0b0; font-size:14px; }
     .emo { width:24px; height:24px; border-radius:50%; background:#d4d4d4; }
+
+    /* ---------- 인스타그램 (프로필 화면만) ---------- */
+    .ig { position:absolute; inset:0; z-index:10; background:#fff; color:#000; padding-top:var(--sbh);
+      display:none; flex-direction:column; }
+    .ig.open { display:flex; }
+    .ig-top { display:flex; align-items:center; justify-content:space-between; padding:6px 16px 8px; }
+    .ig-top .l { display:flex; align-items:center; gap:6px; font-size:19px; font-weight:800; }
+    .ig-top .l svg { flex:none; }
+    .ig-top .dot { position:static; width:7px; height:7px; background:#ff3040; box-shadow:none; }
+    .ig-top .r { display:flex; align-items:center; gap:18px; }
+    .ig-body { flex:1; overflow-y:auto; padding-bottom:66px; }
+    .ig-head { display:flex; align-items:flex-start; gap:22px; padding:6px 16px 14px; }
+    .ig-ava { position:relative; width:86px; height:86px; flex:none; border-radius:50%; overflow:hidden;
+      background:linear-gradient(135deg,#6a5cff,#ff6ec4); }
+    .ig-ava img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ig-plus { position:absolute; right:-2px; bottom:-2px; width:22px; height:22px; border-radius:50%;
+      background:#1b1b1b; color:#fff; display:flex; align-items:center; justify-content:center;
+      border:2px solid #fff; font-size:15px; line-height:1; }
+    .ig-stats { flex:1; display:flex; justify-content:space-between; text-align:center; padding-top:8px; }
+    .ig-stats b { display:block; font-size:18px; font-weight:700; }
+    .ig-stats span { display:block; font-size:13px; color:#262626; margin-top:2px; }
+    .ig-name { padding:0 16px; font-size:15px; font-weight:700; }
+    .ig-email { padding:4px 16px 0; display:flex; align-items:center; gap:6px; font-size:14px; color:#262626; }
+    .ig-song { margin:10px 16px 0; display:flex; align-items:center; justify-content:space-between;
+      border:1px solid #dbdbdb; border-radius:8px; padding:8px 12px; }
+    .ig-song .l2 { display:flex; align-items:center; gap:8px; font-size:13px; }
+    .ig-song b { font-weight:700; }
+    .ig-song span { color:#8e8e93; }
+    .ig-song .add { display:flex; align-items:center; gap:4px; font-size:13px; font-weight:700;
+      border:1px solid #dbdbdb; border-radius:14px; padding:5px 12px; }
+    .ig-btns { display:flex; gap:8px; padding:12px 16px 4px; }
+    .ig-btns div { flex:1; height:32px; border-radius:8px; background:#efefef; display:flex;
+      align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+    .ig-hl { display:flex; gap:20px; padding:16px 16px 6px; overflow-x:auto; scrollbar-width:none; }
+    .ig-hl::-webkit-scrollbar { display:none; }
+    .ig-hl-item { flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; width:66px; }
+    .ig-hl-circ { width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+      background:#fafafa; border:1px solid #dbdbdb; overflow:hidden; position:relative; }
+    .ig-hl-circ.ring { border:2px solid transparent; background:
+      linear-gradient(#fff,#fff) padding-box, radial-gradient(circle at 70% 70%,#515bd4,#8134af,#dd2a7b,#feda75) border-box; }
+    .ig-hl-circ img { width:100%; height:100%; object-fit:cover; }
+    .ig-hl-item span { font-size:12px; }
+    .ig-tabs { display:flex; border-top:1px solid #dbdbdb; margin-top:6px; }
+    .ig-tab { flex:1; display:flex; align-items:center; justify-content:center; height:46px; color:#8e8e93; }
+    .ig-tab.on { color:#262626; border-bottom:1.5px solid #262626; }
+    .ig-posts { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+    .ig-posts .p { position:relative; aspect-ratio:1; background:#eee; }
+    .ig-posts .p img { width:100%; height:100%; object-fit:cover; display:block; }
+    .ig-posts .p .multi { position:absolute; top:6px; right:6px; color:#fff; filter:drop-shadow(0 0 2px rgba(0,0,0,.5)); }
+    .ig-navbar { position:absolute; left:0; right:0; bottom:0; height:60px; z-index:11; background:#fff;
+      border-top:1px solid #efefef; display:flex; align-items:center; justify-content:space-around; }
+    .ig-navbar svg { flex:none; }
+    .ig-nav-dm { position:relative; }
+    .ig-nav-dm .dot { position:absolute; top:-3px; right:-7px; width:9px; height:9px; background:#ff3040;
+      border-radius:50%; box-shadow:0 0 0 2px #fff; }
+    .ig-nav-ava { width:26px; height:26px; border-radius:50%; overflow:hidden; border:1.5px solid #000; }
+    .ig-nav-ava img { width:100%; height:100%; object-fit:cover; display:block; }
   </style>
 </head>
 <body>
@@ -419,6 +476,58 @@
       </div>
     </div>
 
+    <!-- 인스타그램 (프로필 화면) -->
+    <div class="ig" id="ig">
+      <div class="ig-top">
+        <div class="l">
+          <span id="igUsername"></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          <i class="dot"></i>
+        </div>
+        <div class="r">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </div>
+      </div>
+      <div class="ig-body">
+        <div class="ig-head">
+          <div class="ig-ava"><img src="ig/profile.jpg" alt=""><div class="ig-plus">+</div></div>
+          <div class="ig-stats">
+            <div><b id="igPosts"></b><span>게시물</span></div>
+            <div><b id="igFollowers"></b><span>팔로워</span></div>
+            <div><b id="igFollowing"></b><span>팔로잉</span></div>
+          </div>
+        </div>
+        <div class="ig-name" id="igName"></div>
+        <div class="ig-email">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+          <span id="igEmail"></span>
+        </div>
+        <div class="ig-song">
+          <div class="l2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <div><b id="igSongTitle"></b> <span id="igSongArtist"></span></div>
+          </div>
+          <div class="add">+ 추가</div>
+        </div>
+        <div class="ig-btns"><div>프로필 편집</div><div>프로필 공유</div></div>
+        <div class="ig-hl" id="igHl"></div>
+        <div class="ig-tabs">
+          <div class="ig-tab on"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+          <div class="ig-tab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5,3 19,12 5,21"/></svg></div>
+          <div class="ig-tab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8" cy="20" r="1.2" fill="currentColor"/></svg></div>
+        </div>
+        <div class="ig-posts" id="igPostsGrid"></div>
+      </div>
+      <div class="ig-navbar">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polygon points="8,5 19,12 8,19"/></svg>
+        <div class="ig-nav-dm"><svg width="26" height="24" viewBox="0 0 26 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3C6.5 3 3 6 3 10c0 2.2 1.1 4.1 2.8 5.3L5 20l4.5-2.3c.8.2 1.6.3 2.5.3 5.5 0 9-3 9-7s-3.5-8-9-8z"/></svg><i class="dot"></i></div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5 5"/></svg>
+        <div class="ig-nav-ava"><img src="ig/profile.jpg" alt=""></div>
+      </div>
+    </div>
+
     <!-- 잠금 화면 -->
     <div class="lock" id="lock">
       <div class="center">
@@ -476,7 +585,7 @@
       { label:'카카오톡',  img:'kakao.jpg', bg:'#fee500', click:'openKakao()', badge:true },
       { label:'FaceTime',  img:'facetime.jpg' },
       { label:'캘린더',    calendar:true, click:'openCalendar()' },
-      { label:'Instagram', img:'instagram.jpg', zoom:1.12, badge:true},
+      { label:'Instagram', img:'instagram.jpg', zoom:1.12, click:'openInstagram()', badge:true},
       { label:'메모',      img:'notes.jpg' },
       { label:'YouTube',   img:'youtube.jpg' },
       { label:'SNOW',      img:'snow.jpg' },
@@ -513,43 +622,32 @@
     // 프로필 색: b=파랑, g=초록, p=보라
     const COLORS = { b:'#8fc5f2', g:'#7fd6c2', p:'#c3c0f7' };
 
-    // 채팅 목록 (위에서부터 순서대로). chat 이 있는 방만 들어갈 수 있어요.
-    // 채팅: ['r'=받은 말 / 's'=보낸 말, 내용, 시간(묶음의 마지막에만)] / ['d', 날짜]
-    const rooms = [
-      { name:'박종성', msg:'괜찮은거 맞니?', time:'오전 8:30', unread:3, c:'g',
-        chat:[
-          ['d','2026년 12월 19일 토요일'],
-          ['r','좋은시간보내렴','오후 9:31'],
-          ['s','감사~ 형도요ㅋㅋ','오후 9:31'],
-          ['r','......','오후 9:31'],
-          ['d','2026년 12월 22일 화요일'],
-          ['r','선우야'],
-          ['r','사고났다는게 뭔소리야','오전 8:18'],
-          ['r','괜찮은거 맞니?','오전 8:30'],
-        ] },
-      { name:'매니저님',            msg:'일단 회복이 우선인거 잊지 말구!',  time:'오전 9:27',  unread:1, c:'p' },
-      { name:'누나',            msg:'사진을 보냈습니다.',      time:'어제',       unread:0, c:'p' },
-      { name:'재윤이 형', msg:'내려와~', time:'어제', unread:3, c:'b',
-        chat:[
-          ['r','언제쯤 마무리돼?', '오후 7:37'],
-          ['r','서누~','오후 7:49'],
-          ['s','혀엉ㅠㅠㅠㅠㅠㅠㅜㅜㅠㅠ'],
-          ['s','몰라 좀 밀렸어 촬영이ㅠㅠㅠ','오후 7:52'],
-          ['r','ㅠㅠㅠㅠ'],
-          ['r','그럼'],
-          ['r','거의 끝나갈 때 쯤에 연락해'],
-          ['r','바로 출발할 수 있어~','오후 7:53'],
-          ['s','오키~ 너무 고마워...🥹','오후 8:01'],
-          ['d','2026년 12월 21일 월요일'],
-          ['r','선우'],
-          ['r','왜 전화 안 받아'],
-          ['r','내려와~','오후 7:49'],
-        ] },
-      { name:'진혁',            msg:'ㅇㅋ',                    time:'어제',       unread:0, c:'g' },
-      { name:'준기형',          msg:'이모티콘을 보냈습니다.',  time:'어제',       unread:0, c:'b' },
-      { name:'지수',            msg:'확인~',                   time:'12월 20일',  unread:0, c:'g' },
-      { name:'반지공방아뜰리에', msg:'예약 확정되었습니다 :)',  time:'12월 19일',  unread:0, c:'b' },
-      { name:'진서',            msg:'ㅋㅋㅋㅋㅋ',              time:'12월 19일',  unread:0, c:'p' },
+    // ---------- 인스타그램 프로필 ----------
+    // 프로필 사진: ig/profile.jpg 를 넣어요
+    const IG_USERNAME = 'sunoooooo._';
+    const IG_NAME = '선 우';
+    const IG_POSTS_COUNT = 8;
+    const IG_FOLLOWERS = 0;
+    const IG_FOLLOWING = 2;
+    const IG_EMAIL = 'sunoo24@gmail.com';
+    const IG_SONG_TITLE = 'Break For You';
+    const IG_SONG_ARTIST = 'Valley';
+    // 스토리 하이라이트: 첫 칸은 항상 New(빈 동그라미), 그 다음부터 이 목록이 이어져요
+    const IG_HIGHLIGHTS = [
+      { img:'ig/highlight1.jpg' },
+    ];
+    // 피드에 올라갈 게시물 대표 사진 (왼쪽 위부터 3개씩 채워져요)
+    // 9칸 중 비어있는 칸은 ig/post-extra.jpg 로 채워둬요 (나중에 원하는 사진으로 바꿔요)
+    const IG_POSTS = [
+      'ig/post1.jpg',
+      'ig/post2.jpg',
+      'ig/post3.jpg',
+      'ig/post4.jpg',
+      'ig/post5.jpg',
+      'ig/post6.jpg',
+      'ig/post7.jpg',
+      'ig/post8.jpg',
+      'ig/post-extra.jpg',
     ];
     // =========================
 
@@ -674,6 +772,46 @@
     }
     refreshList();
 
+    // 채팅 목록 (위에서부터 순서대로). chat 이 있는 방만 들어갈 수 있어요.
+    // 채팅: ['r'=받은 말 / 's'=보낸 말, 내용, 시간(묶음의 마지막에만)] / ['d', 날짜]
+    const rooms = [
+      { name:'박종성', msg:'괜찮은거 맞니?', time:'오전 8:30', unread:3, c:'g',
+        chat:[
+          ['d','2026년 12월 19일 토요일'],
+          ['r','좋은시간보내렴','오후 9:31'],
+          ['s','감사~ 형도요ㅋㅋ','오후 9:31'],
+          ['r','......','오후 9:31'],
+          ['d','2026년 12월 22일 화요일'],
+          ['r','선우야'],
+          ['r','사고났다는게 뭔소리야','오전 8:18'],
+          ['r','괜찮은거 맞니?','오전 8:30'],
+        ] },
+      { name:'매니저님',            msg:'일단 회복이 우선인거 잊지 말구!',  time:'오전 9:27',  unread:1, c:'p' },
+      { name:'누나',            msg:'사진을 보냈습니다.',      time:'어제',       unread:0, c:'p' },
+      { name:'재윤이 형', msg:'내려와~', time:'어제', unread:3, c:'b',
+        chat:[
+          ['r','언제쯤 마무리돼?', '오후 7:37'],
+          ['r','서누~','오후 7:49'],
+          ['s','혀엉ㅠㅠㅠㅠㅠㅠㅜㅜㅠㅠ'],
+          ['s','몰라 좀 밀렸어 촬영이ㅠㅠㅠ','오후 7:52'],
+          ['r','ㅠㅠㅠㅠ'],
+          ['r','그럼'],
+          ['r','거의 끝나갈 때 쯤에 연락해'],
+          ['r','바로 출발할 수 있어~','오후 7:53'],
+          ['s','오키~ 너무 고마워...🥹','오후 8:01'],
+          ['d','2026년 12월 21일 월요일'],
+          ['r','선우'],
+          ['r','왜 전화 안 받아'],
+          ['r','내려와~','오후 7:49'],
+        ] },
+      { name:'진혁',            msg:'ㅇㅋ',                    time:'어제',       unread:0, c:'g' },
+      { name:'준기형',          msg:'이모티콘을 보냈습니다.',  time:'어제',       unread:0, c:'b' },
+      { name:'지수',            msg:'확인~',                   time:'12월 20일',  unread:0, c:'g' },
+      { name:'반지공방아뜰리에', msg:'예약 확정되었습니다 :)',  time:'12월 19일',  unread:0, c:'b' },
+      { name:'진서',            msg:'ㅋㅋㅋㅋㅋ',              time:'12월 19일',  unread:0, c:'p' },
+    ];
+    refreshList();
+
     function openRoom(i) {
       const r = rooms[i];
       curRoom = i;
@@ -701,6 +839,34 @@
       document.getElementById('room').classList.remove('open');
     }
     function openKakao() { document.getElementById('kk').classList.add('open'); phone.classList.add('dark'); }
+
+    // ---------- 인스타그램 ----------
+    document.getElementById('igUsername').textContent = IG_USERNAME;
+    document.getElementById('igName').textContent = IG_NAME;
+    document.getElementById('igPosts').textContent = IG_POSTS_COUNT;
+    document.getElementById('igFollowers').textContent = IG_FOLLOWERS;
+    document.getElementById('igFollowing').textContent = IG_FOLLOWING;
+    document.getElementById('igEmail').textContent = IG_EMAIL;
+    document.getElementById('igSongTitle').textContent = IG_SONG_TITLE;
+    document.getElementById('igSongArtist').textContent = IG_SONG_ARTIST;
+
+    document.getElementById('igHl').innerHTML =
+      `<div class="ig-hl-item"><div class="ig-hl-circ"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></div><span>New</span></div>` +
+      IG_HIGHLIGHTS.map(h => `
+        <div class="ig-hl-item">
+          <div class="ig-hl-circ ring"><img src="${h.img}" alt="" onerror="this.parentElement.style.background='#eee'; this.style.display='none'"></div>
+          <span>${h.label || ''}</span>
+        </div>`).join('');
+
+    const multiIcon = `<svg class="multi" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z" opacity=".55"/><rect x="2" y="6" width="16" height="14" rx="3"/></svg>`;
+    document.getElementById('igPostsGrid').innerHTML = IG_POSTS.map(src => `
+      <div class="p"><img src="${src}" alt="" onerror="this.style.display='none'">${multiIcon}</div>`).join('');
+
+    function openInstagram() {
+      document.getElementById('ig').classList.add('open');
+      phone.classList.add('dark');
+    }
+
     // ---------- 캘린더 ----------
     // 2026년 12월 1일은 화요일이에요 (월=1, 화=2, 수=3 ... 일=7)
     const CAL_FIRST_WEEKDAY = 2;
@@ -745,6 +911,7 @@
       document.getElementById('kk').classList.remove('open');
       document.getElementById('gal').classList.remove('open');
       document.getElementById('calScreen').classList.remove('open');
+      document.getElementById('ig').classList.remove('open');
       document.getElementById('gtabs').classList.remove('open');
       phone.classList.remove('dark');
     }
